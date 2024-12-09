@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracking Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/track.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Tracking: {{ function_name.replace('_', ' ').capitalize() }}</h1>
+        </header>
+
+        <main>
+            <!-- Live Video Feed Section -->
+            <div class="video-container">
+                <img src="{{ url_for('video_feed', function_name=function_name) }}" alt="Live Video Stream" width="640" height="480" />
+            </div>
+
+            <!-- Buttons for Control -->
+            <div class="controls">
+                <a href="{{ url_for('results') }}" class="btn btn-stop">Stop Tracking</a>
+                <a href="{{ url_for('results') }}" class="btn btn-view">View Results</a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add any custom scripts here if necessary -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

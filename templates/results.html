@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracking Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}"> 
+</head>
+<body>
+    <h2>Results</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Joint Name</th>
+                <th>Minimum Angle</th>
+                <th>Maximum Angle</th>
+                <th>Last Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for joint_name, min_angle, max_angle, timestamp in tracking_data %}
+            <tr>
+                <td>{{ joint_name }}</td>
+                <td>{{ min_angle }}</td>
+                <td>{{ max_angle }}</td>
+                <td>{{ timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div>
+        <a href="{{ url_for('download_csv') }}" class="btn btn-primary">DOWNLOAD CSV</a>
+    </div>
+</body>
+</html>

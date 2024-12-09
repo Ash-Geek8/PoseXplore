@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Main Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Select a Tracking Option</h1>
+        <ul id="option_container">
+            {% for option in options %}
+            <li id="option" track-url="{{ url_for('track', function_name=option) }}">
+                <a href="{{ url_for('track', function_name=option) }}">{{ option.replace('_', ' ').capitalize() }}</a>
+                <img src="{{ url_for('static', filename='images/' + option + '.jpg') }}" alt="{{ option.replace('_', ' ') }}" 
+                style="width:200px; height:130px; margin:10px 20px 5px 3px">
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script>
+        document.querySelectorAll('li').forEach(li => {
+            li.addEventListener("click", function(){
+                const url = this.getAttribute("track-url");
+                window.location.href = url;
+            });
+        });
+    </script>
+</body>
+</html>

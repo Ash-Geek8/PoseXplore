@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    height: 680px;
+    margin: 20px auto;
+    margin-top: 100px;
+    padding: 30px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border-radius: 10px;
+}
+
+h1 {
+    color: #2a4d68; /* Dark Blue */
+    margin-bottom: 70px;
+}
+
+ul {
+    list-style-type: none;
+    padding:    0;
+}
+
+li {
+    margin: 10px 15px;
+    display: inline-block;
+    background-color: #5a8f7d; /* Green */
+    padding: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 200px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+li:hover {
+    background-color: #438f69; /* Darker Green */
+}
+
+a{
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+}
+
+#video_container {
+    margin-top: 20px;
+    position: relative;
+}
+
+.buttons {
+    margin-top: 20px;
+}
+
+button {
+    background-color: #5a8f7d; /* Green */
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #438f69; /* Darker Green */
+}
+
+button:active {
+    transform: scale(0.95); /* Button click effect */
+}
+
+.controls{
+    margin-top: 25px;
+    padding: 15px;
+    margin-bottom: 150px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+}
+.btn{
+    background-color: #438f69;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.btn:hover{
+    background-color: #5a8f7d;
+    border-radius: 10px;
+    padding: 15px;
+}
