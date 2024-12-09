@@ -3,6 +3,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import sqlite3
+import os
 from datetime import datetime
 from PIL import Image
 
@@ -16,22 +17,26 @@ mp_drawing = mp.solutions.drawing_utils
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 cap = cv2.VideoCapture(0)
 # SQLite Database Setup
-def init_db():
-    conn = sqlite3.connect("angle_data.db")
-    cursor = conn.cursor()
+# Environment variables for SQLite database path
+DATABASE_PATH = os.getenv("DATABASE_PATH", "angle_data.db")
 
-    # Create a table to store limb data if it doesn't exist
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS angle_data (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        joint_name TEXT NOT NULL,
-        min_angle REAL,
-        max_angle REAL,
-        timestamp TEXT
-    )
-    """)
-    conn.commit()
-    return conn,cursor
+
+# Initialize the database
+def init_db():
+    db_exists = os.path.exists(DATABASE_PATH)
+    conn = sqlite3.connect(DATABASE_PATH)
+    cursor = conn.cursor()
+    if not db_exists:
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS angle_data (
+                joint_name TEXT,
+                min_angle REAL,
+                max_angle REAL,
+                timestamp TEXT
+            )
+        """)
+        conn.commit()
+    return conn, cursor
 
 def update_angle_data(cursor, joint_name, min_angle, max_angle):
     """Insert or update angle data in the SQLite database."""
@@ -780,4 +785,4 @@ def download_csv():
     return response
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
