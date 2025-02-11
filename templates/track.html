@@ -13,6 +13,9 @@
         </header>
 
         <main>
+            <!-- Hidden Input to Store Function Name -->
+            <input type="hidden" id="function-name" value="{{ function_name }}">
+
             <!-- Video Feed -->
             <div class="video-container">
                 <video id="webcam" width="80%" autoplay></video>
@@ -22,9 +25,7 @@
             <!-- Canvas for Capturing Frames -->
             <canvas id="canvas" style="display: none;"></canvas>
 
-            <!-- Improve the Toggle Button -->
-
-            <!-- Toggle Button -->
+            <!-- Controls -->
             <div class="controls">
                 <button id="toggle-button" class="btn btn-toggle">Switch to Normal Frame</button>
                 <a href="{{ url_for('results') }}" class="btn btn-view">View Results</a>
@@ -65,35 +66,36 @@
         }
 
         function sendFrameToFlask(frameData) {
-    let functionNameElement = document.getElementById('webcam');
-    if (!functionNameElement) {
-        console.error("Error: function-name element not found.");
-        return;
-    }
+            let functionNameElement = document.getElementById('function-name');
+            if (!functionNameElement) {
+                console.error("Error: function-name element not found.");
+                return;
+            }
 
-    let functionName = functionNameElement.value;
+            let functionName = functionNameElement.value;
 
-    fetch(`/process_frame/${functionName}`, { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ frame: frameData, display_mode: displayMode })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Server responded with ${response.status}`);
+            fetch(`/process_frame/${functionName}`, { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ frame: frameData, display_mode: displayMode })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Server responded with ${response.status}: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.processed_frame) {
+                    processedFrame.src = 'data:image/jpeg;base64,' + data.processed_frame;
+                } else if (data.error) {
+                    console.error("Server Error:", data.error);
+                }
+            })
+            .catch(error => console.error('Frame Sending Error:', error));
         }
-        return response.json();
-    })
-    .then(data => {
-        if (data.processed_frame) {
-            processedFrame.src = 'data:image/jpeg;base64,' + data.processed_frame;
-        }
-    })
-    .catch(error => console.error('Frame Sending Error:', error));
-}
-
-
-
 
         toggleButton.addEventListener('click', () => {
             displayMode = displayMode === 'blank' ? 'normal' : 'blank';
