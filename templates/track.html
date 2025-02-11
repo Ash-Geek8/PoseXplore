@@ -65,7 +65,14 @@
         }
 
         function sendFrameToFlask(frameData) {
-    let functionName = document.getElementById('webcam').value;
+    let functionNameElement = document.getElementById('webcam');
+    if (!functionNameElement) {
+        console.error("Error: function-name element not found.");
+        return;
+    }
+
+    let functionName = functionNameElement.value;
+
     fetch(`/process_frame/${functionName}`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -75,7 +82,7 @@
         if (!response.ok) {
             throw new Error(`Server responded with ${response.status}`);
         }
-        return response.json(); // Parse JSON only if response is valid
+        return response.json();
     })
     .then(data => {
         if (data.processed_frame) {
@@ -84,6 +91,7 @@
     })
     .catch(error => console.error('Frame Sending Error:', error));
 }
+
 
 
 
