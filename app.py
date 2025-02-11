@@ -1337,4 +1337,5 @@ def download_csv():
     return send_file(csv_filepath, as_attachment=True, download_name=csv_filename, mimetype="text/csv")
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    port = int(os.environ.get("PORT", 10000))  # Default to 10000, but use Render's assigned port
+    app.run(host="0.0.0.0", port=port, debug=False)
