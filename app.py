@@ -1213,7 +1213,7 @@ TRACK_FUNCTIONS = {
     "Neck_Extension": (track_neck_extension, {"conn": None, "cursor": None}),
     "Neck_Lateral_Flexion": (track_neck_lateral, {"conn": None, "cursor": None}),
     "Neck_Rotation": (track_neck_rotation, {"conn": None, "cursor": None}),
-    "Axial_Joint_movement": (track_axial_joint, {"conn": None, "cursor": None}),
+    "Axial_Joint_Movement": (track_axial_joint, {"conn": None, "cursor": None}),
     "Lumbar_Lateral_Right": (track_lumbar_lateral_right, {"conn": None, "cursor": None}),
     "Lumbar_Lateral_Left": (track_lumbar_lateral_left, {"conn": None, "cursor": None}),
     "Lumbar_Flexion_Extension": (track_lumbar_flexion_extension, {"conn": None, "cursor": None}),    
