@@ -1261,29 +1261,33 @@ def track(function_name):
 @app.route('/process_frame/<function_name>', methods=['POST'])
 def process_frame(function_name):
     data = request.get_json()
-    frame_data = data.get('frame')
-    display_mode = data.get('display_mode', 'blank')
-
-    if not frame_data:
+    if not data or "frame" not in data:
         return jsonify({"error": "No frame data received"}), 400
 
-    # Decode Base64 Image
-    img_data = base64.b64decode(frame_data.split(',')[1])
-    image = Image.open(BytesIO(img_data))
-    image = np.array(image)
-    #image = cv2.imdecode(img_data, cv2.IMREAD_COLOR)
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-    #image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    frame_data = data["frame"]
+    display_mode = data.get("display_mode", "blank")
 
+    # Decode Base64 Image
+    try:
+        img_data = base64.b64decode(frame_data.split(',')[1])
+        image = Image.open(BytesIO(img_data))
+        image = np.array(image)
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    except Exception as e:
+        return jsonify({"error": f"Image processing failed: {str(e)}"}), 500
+
+    # Ensure function exists
     func_info = TRACK_FUNCTIONS.get(function_name)
-    if func_info:
-        func, default_args = func_info
-        conn, cursor = init_db()  # Initialize the database connection
-        updated_args = {**default_args, "conn": conn, "cursor": cursor, "displayMode": display_mode}
-        frame_set = func(image, **updated_args)
-        return jsonify({"processed_frame": frame_set})
-    else:
-        return "Invalid function name"
+    if not func_info:
+        return jsonify({"error": "Invalid function name"}), 400
+
+    func, default_args = func_info
+    conn, cursor = init_db()
+    updated_args = {**default_args, "conn": conn, "cursor": cursor, "displayMode": display_mode}
+
+    frame_set = func(image, **updated_args)
+    
+    return jsonify({"processed_frame": frame_set})
 
 @app.route("/video_feed/<function_name>/<display_mode>")
 def video_feed(function_name, display_mode):
