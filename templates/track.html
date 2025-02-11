@@ -65,12 +65,18 @@
         }
 
         function sendFrameToFlask(frameData) {
-    fetch(`{{ url_for('process_frame', function_name=function_name) }}`, {
+    let functionName = document.getElementById('function-name').value;
+    fetch(`/process_frame/${functionName}`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ frame: frameData, display_mode: displayMode }) // Send display mode
+        body: JSON.stringify({ frame: frameData, display_mode: displayMode })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}`);
+        }
+        return response.json(); // Parse JSON only if response is valid
+    })
     .then(data => {
         if (data.processed_frame) {
             processedFrame.src = 'data:image/jpeg;base64,' + data.processed_frame;
@@ -78,6 +84,7 @@
     })
     .catch(error => console.error('Frame Sending Error:', error));
 }
+
 
 
         toggleButton.addEventListener('click', () => {
