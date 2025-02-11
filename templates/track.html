@@ -65,7 +65,7 @@
         }
 
         function sendFrameToFlask(frameData) {
-    let functionName = document.getElementById('function-name').value;
+    let functionName = document.getElementById('webcam').value;
     fetch(`/process_frame/${functionName}`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
