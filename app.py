@@ -1271,7 +1271,7 @@ def process_frame(function_name):
     img_data = base64.b64decode(frame_data.split(',')[1])
     #image = Image.open(BytesIO(img_data))
     #image = np.array(image)
-    image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+    image = cv2.imdecode(img_data, cv2.IMREAD_COLOR)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     #image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
