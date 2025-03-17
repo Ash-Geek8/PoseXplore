@@ -1442,4 +1442,5 @@ def download_csv():
     return send_file(csv_filepath, as_attachment=True, download_name=csv_filename, mimetype="text/csv")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
