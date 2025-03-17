@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracking Page</title>
+    <link href="https://fonts.googleapis.com/css?family=Kavoon&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Jomhuria&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/track.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Tracking: {{ function_name.replace('_', ' ') }}</h1>
+        </header>
+
+        <main>
+            <!-- Hidden Input to Store Function Name -->
+            <input type="hidden" id="function-name" value="{{ function_name }}">
+
+            <!-- Video Feed -->
+            <div class="video-container" onclick="openFullscreen()">
+                <video id="webcam" autoplay></video>
+                <img id="processed-frame" >
+            </div>
+
+            <!-- Canvas for Capturing Frames -->
+            <canvas id="canvas" style="display: none;"></canvas>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button id="toggle-button" class="btn btn-toggle">Switch to Normal Frame</button>
+                <a href="{{ url_for('results') }}" class="btn btn-view">View Results</a>
+                <a href="{{ url_for('main_page') }}" class="btn btn-back">Back</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+
+        function openFullscreen() {
+            const img = document.getElementById("processed-frame");
+            if (img.requestFullscreen) {
+                img.requestFullscreen();
+            } else if (img.mozRequestFullScreen) { // Firefox
+                img.mozRequestFullScreen();
+            } else if (img.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                img.webkitRequestFullscreen();
+            } else if (img.msRequestFullscreen) { // IE/Edge
+                img.msRequestFullscreen();
+            }
+        }
+
+        const toggleButton = document.getElementById('toggle-button');
+        let videoElement = document.getElementById('webcam');
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        let processedFrame = document.getElementById('processed-frame');
+        let displayMode = 'blank';
+
+        function startWebcam() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    videoElement.srcObject = stream;
+                    videoElement.play();
+                    videoElement.onloadedmetadata = () => {
+                        canvas.width = videoElement.videoWidth;
+                        canvas.height = videoElement.videoHeight;
+                        captureFrame();
+                    };
+                })
+                .catch(error => console.error('Webcam Error:', error));
+        }
+
+        function captureFrame() {
+            setInterval(() => {
+                ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+                let frameData = canvas.toDataURL('image/jpeg');
+
+                sendFrameToFlask(frameData);
+            }, 180);  // Adjust capture rate
+        }
+
+        function sendFrameToFlask(frameData) {
+            let functionNameElement = document.getElementById('function-name');
+            if (!functionNameElement) {
+                console.error("Error: function-name element not found.");
+                return;
+            }
+
+            let functionName = functionNameElement.value;
+
+            fetch(`/process_frame/${functionName}`, { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ frame: frameData, display_mode: displayMode })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Server responded with ${response.status}: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.processed_frame) {
+                    processedFrame.src = 'data:image/jpeg;base64,' + data.processed_frame;
+                } else if (data.error) {
+                    console.error("Server Error:", data.error);
+                }
+            })
+            .catch(error => console.error('Frame Sending Error:', error));
+        }
+
+        toggleButton.addEventListener('click', () => {
+            displayMode = displayMode === 'blank' ? 'normal' : 'blank';
+            toggleButton.textContent = displayMode === 'blank' ? 'Switch to Normal Frame' : 'Switch to Blank Frame';
+        });
+
+        window.onload = startWebcam;
+    </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.container {
+    max-width: 100%;
+    margin: 20px auto;
+    margin-top: 70px;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border-radius: 10px;
+    
+}
+
+h1 {
+    color: #2a4d68; /* Dark Blue */
+    margin-bottom: 70px;
+}
+
+ul {
+    list-style-type: none;
+    padding:    0;
+}
+
+li {
+    margin: 10px 15px;
+    display: inline-block;
+    background-color: #0B4C9E; /* Green */
+    padding: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 200px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+li:hover {
+    background-color: rgb(13, 13, 79); /* Darker Green */
+}
+
+a {
+    text-decoration: none;
+    white-space: nowrap;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#video_container {
+    margin-top: 20px;
+    position: relative;
+}
+
+.buttons {
+    margin-top: 20px;
+}
+
+button {
+    background-color: #5a8f7d; /* Green */
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 15px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: all 0.3s ease;
+
+}
+
+button:hover {
+    background-color: #438f69; /* Darker Green */
+}
+
+button:active {
+    transform: scale(0.95); /* Button click effect */
+}
+.btn{
+    background-color: #5a8f7d; /* Green */
+}
+
+/* Navigation Bar */
+.nav-bar {
+    width: 100%;
+    height: 10vh; /* Dynamic height */
+    background: rgba(0, 117, 162, 1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    position: fixed;
+    top: 0%;
+  }
+  
+  .logo-circle {
+    width: 60px;
+    height: 60px;
+    background: rgb(70, 75, 75);
+    border-radius: 50%;
+  }
+  
+  .title {
+    color: rgba(218, 255, 239, 1);
+    font-family: 'Jomhuria', cursive;
+    font-size: 70px;
+  }
+  
+  nav {
+    margin-right: 25px;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav-link {
+    color: rgba(218, 255, 239, 1);
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s;
+  }
+  
+  .nav-link:hover {
+    color: rgba(0, 117, 162, 1);
+    background: rgba(255, 255, 255, 1);
+    border-radius: 25%;
+  }
