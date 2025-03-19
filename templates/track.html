@@ -66,8 +66,8 @@ async function startWebcam() {
         videoElement.play();
 
         videoElement.onloadedmetadata = () => {
-            canvas.width = videoElement.videoWidth;
-            canvas.height = videoElement.videoHeight;
+            canvas.width = videoElement.videoWidth / 2;
+            canvas.height = videoElement.videoHeight / 2;
             captureFrame(); // Start capturing frames once webcam is ready
         };
     } catch (error) {
@@ -83,7 +83,7 @@ function captureFrame() {
         await sendFrameToFlask(frameData);
 
         // Control frame rate with setTimeout instead of hammering CPU
-        setTimeout(() => requestAnimationFrame(sendFrame), 180);
+        setTimeout(() => requestAnimationFrame(sendFrame), 500);
     }
 
     sendFrame(); // Start sending frames
