@@ -23,7 +23,7 @@ mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
 pose = mp_pose.Pose(min_detection_confidence=0.7, min_tracking_confidence=0.7)
 
-CSV_EXPORT_DIR = "static\csv_exports"
+CSV_EXPORT_DIR = "static\\csv_exports"
 
 # Ensure the directory exists
 os.makedirs(CSV_EXPORT_DIR, exist_ok=True)
