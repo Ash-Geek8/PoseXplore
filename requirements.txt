@@ -4,3 +4,4 @@ mediapipe==0.10.8
 numpy==1.26.0
 pillow==10.0.1
 gunicorn==21.2.0
+flask-sqlalchemy
