@@ -52,73 +52,84 @@
         }
 
         const toggleButton = document.getElementById('toggle-button');
-        let videoElement = document.getElementById('webcam');
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
-        let processedFrame = document.getElementById('processed-frame');
-        let displayMode = 'blank';
+const videoElement = document.getElementById('webcam');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const processedFrame = document.getElementById('processed-frame');
 
-        function startWebcam() {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    videoElement.srcObject = stream;
-                    videoElement.play();
-                    videoElement.onloadedmetadata = () => {
-                        canvas.width = videoElement.videoWidth;
-                        canvas.height = videoElement.videoHeight;
-                        captureFrame();
-                    };
-                })
-                .catch(error => console.error('Webcam Error:', error));
+let displayMode = 'blank';
+
+async function startWebcam() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        videoElement.srcObject = stream;
+        videoElement.play();
+
+        videoElement.onloadedmetadata = () => {
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            captureFrame(); // Start capturing frames once webcam is ready
+        };
+    } catch (error) {
+        console.error('Webcam Error:', error);
+    }
+}
+
+function captureFrame() {
+    async function sendFrame() {
+        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        const frameData = canvas.toDataURL('image/jpeg');
+
+        await sendFrameToFlask(frameData);
+
+        // Control frame rate with setTimeout instead of hammering CPU
+        setTimeout(() => requestAnimationFrame(sendFrame), 180);
+    }
+
+    sendFrame(); // Start sending frames
+}
+
+async function sendFrameToFlask(frameData) {
+    try {
+        const functionName = document.getElementById('function-name')?.value;
+        if (!functionName) {
+            console.error("Error: 'function-name' element not found or empty.");
+            return;
         }
 
-        function captureFrame() {
-            setInterval(() => {
-                ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-                let frameData = canvas.toDataURL('image/jpeg');
-
-                sendFrameToFlask(frameData);
-            }, 180);  // Adjust capture rate
-        }
-
-        function sendFrameToFlask(frameData) {
-            let functionNameElement = document.getElementById('function-name');
-            if (!functionNameElement) {
-                console.error("Error: function-name element not found.");
-                return;
-            }
-
-            let functionName = functionNameElement.value;
-
-            fetch(`/process_frame/${functionName}`, { 
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ frame: frameData, display_mode: displayMode })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(`Server responded with ${response.status}: ${text}`);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.processed_frame) {
-                    processedFrame.src = 'data:image/jpeg;base64,' + data.processed_frame;
-                } else if (data.error) {
-                    console.error("Server Error:", data.error);
-                }
-            })
-            .catch(error => console.error('Frame Sending Error:', error));
-        }
-
-        toggleButton.addEventListener('click', () => {
-            displayMode = displayMode === 'blank' ? 'normal' : 'blank';
-            toggleButton.textContent = displayMode === 'blank' ? 'Switch to Normal Frame' : 'Switch to Blank Frame';
+        const response = await fetch(`/process_frame/${functionName}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ frame: frameData, display_mode: displayMode })
         });
 
-        window.onload = startWebcam;
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Server responded with ${response.status}: ${errorText}`);
+        }
+
+        const data = await response.json();
+
+        if (data?.processed_frame) {
+            processedFrame.src = `data:image/jpeg;base64,${data.processed_frame}`;
+        } else if (data?.error) {
+            console.error('Server Error:', data.error);
+        }
+    } catch (error) {
+        console.error('Frame Sending Error:', error);
+    }
+}
+
+// Toggle display mode
+toggleButton?.addEventListener('click', () => {
+    displayMode = displayMode === 'blank' ? 'normal' : 'blank';
+    toggleButton.textContent = displayMode === 'blank'
+        ? 'Switch to Normal Frame'
+        : 'Switch to Blank Frame';
+});
+
+window.addEventListener('load', startWebcam);
+
     </script>
 </body>
 </html>
